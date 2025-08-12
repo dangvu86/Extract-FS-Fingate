@@ -34,11 +34,12 @@ def extract_tables_from_html(html_content):
             df = pd.read_html(StringIO(str(tables[0])))[0]
             if isinstance(df.columns, pd.MultiIndex):
                 df.columns = [' '.join(map(str, col)).strip() for col in df.columns]
-            df.iloc[0, 0] = str(df.iloc[0, 0]).replace('.', '').replace(')', '').replace('(', '-')
+            df.iloc[0, 0] = str(df.iloc[0, 0]).replace('.', '').replace(')', '').replace('(', '-').replace(',', '')
             for col in df.columns[1:]:
                 df[col] = df[col].astype(str).str.replace('.', '', regex=False)
                 df[col] = df[col].astype(str).str.replace(')', '', regex=False)
                 df[col] = df[col].astype(str).str.replace('(', '-', regex=False)
+                df[col] = df[col].astype(str).str.replace(',', '', regex=False)
                 df[col] = pd.to_numeric(df[col], errors="coerce")
             return df
         except Exception as e:
@@ -112,6 +113,7 @@ if html_tables:
                 st.error(table)
 else:
     st.info("Không tìm thấy bảng nào trong file ZIP hoặc lỗi khi xử lý file.")
+
 
 
 
